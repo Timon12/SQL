@@ -1,0 +1,21 @@
+CREATE FUNCTION last_dayname_month(year_in varchar(10),
+                                   month_ varchar(10),
+                                   search_dayname varchar(10))
+  RETURNS date
+  DETERMINISTIC
+  SQL SECURITY INVOKER
+BEGIN
+DECLARE day_int int(1);
+DECLARE search_date date;
+  CASE search_dayname
+    WHEN 'Monday' THEN SET day_int = 0;
+    WHEN 'Tuesday' THEN SET day_int = 1;
+    WHEN 'Wednesday' THEN SET day_int = 2;
+    WHEN 'Thursday' THEN SET day_int = 3;
+    WHEN 'Friday' THEN SET day_int = 4;
+    WHEN 'Saturday' THEN SET day_int = 5;
+    WHEN 'Sunday' THEN SET day_int = 6;
+  END CASE;
+  SET search_date=DATE_FORMAT(LAST_DAY(STR_TO_DATE(CONCAT_WS('-',year_in,month_,'01'),'%Y-%m-%d'))-((7+WEEKDAY((LAST_DAY(STR_TO_DATE(CONCAT_WS('-',year_in,month_,'01'),'%Y-%m-%d')))))-day_int)%7, '%Y-%m-%d');
+  RETURN search_date;
+END;
